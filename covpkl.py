@@ -10,7 +10,7 @@ import numpy as np
 if len(sys.argv) > 1:
     path = sys.argv[1]
 else:
-    path = "/home/lin/Desktop/data/nnunet/nnUNet_preprocessed/Task006_Lung/"
+    path = "/home/lin/Desktop/data/nnunet/"
 print(path)
 
 
@@ -52,5 +52,5 @@ for root, dirs, files in os.walk(path):
                 data = pickle.load(f)
             # print(type(data))
             # print(json.dumps(data, cls=NumpyEncoder))
-            with open(osp.join(root, file[:-4] + ".json"), "w") as f:
+            with open(osp.join(root, file + ".json"), "w") as f:
                 print(json.dumps(data, cls=NumpyEncoder, indent=4), file=f)
