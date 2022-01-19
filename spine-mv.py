@@ -34,7 +34,8 @@ for label_dir, scan_msd_fdr, label_msd_fdr in label_dirs:
         patient = label[: -len("_seg.nii.gz")]
         scan_file = scans[patient]
         label_file = osp.join(label_dir, label)
-        print(scan_file, label_file)
-        shutil.copy(scan_file, scan_msd_dir)
-        shutil.copy(label_file, label_msd_dir)
+        print(scan_file, scan_msd_dir)
+        print(label_file, label_msd_dir)
+        shutil.move(scan_file, scan_msd_dir)
+        shutil.move(label_file, label_msd_dir)
         # input("here")

@@ -30,7 +30,7 @@ pip install matplotlib
 
 # 设置环境变量
 ```shell
-data_dir=/home/lin/Desktop/data/nnunet
+data_dir=/home/lin/Desktop/data/nnunet/CTSpine1K
 # data_dir=/home/work/prep
 export nnUNet_raw_data_base=${data_dir}
 export nnUNet_preprocessed=${data_dir}/nnUNet_preprocessed
@@ -43,10 +43,52 @@ echo  RESULTS_FOLDER: ${RESULTS_FOLDER}
 ```
 
 # nnunet预处理
+```shell
 
-nnUNet_convert_decathlon_task -i /home/lin/Desktop/msd # 4d序列会拆分成3d
+# 环境
+zip_name=Task02_Heart
+task_name=$(python -c "print('${zip_name}'.replace('0', '00'))")
+task_num=$(python -c "print('${zip_name}'[4:6])")
 
-nnUNet_plan_and_preprocess -t 6 -tl 1 -tf 1 --verify_dataset_integrity
+echo ${zip_name}
+echo ${task_name}
+echo ${task_num}
+
+conda activate torch
+data_dir=/home/lin/Desktop/data/nnunet/${task_name}
+export nnUNet_raw_data_base=${data_dir}
+export nnUNet_preprocessed=${data_dir}/nnUNet_preprocessed
+export RESULTS_FOLDER=${data_dir}/RESULTS_FOLDER
+
+echo  nnUNet_raw_data_base: ${nnUNet_raw_data_base}
+echo  nnUNet_preprocessed: ${nnUNet_preprocessed}
+echo  RESULTS_FOLDER: ${RESULTS_FOLDER}
+
+sleep 3
+
+cd /home/lin/Desktop/msd/
+tar -xvf ${zip_name}.tar
+pwd
+ls
+sleep 3
+
+nnUNet_convert_decathlon_task -i /home/lin/Desktop/msd/${zip_name} # 4d序列会拆分成3d
+
+xfce4-terminal --hold --title "nnUNet_raw_data/${task_name}/" -e "baidupcs u /home/lin/Desktop/data/nnunet/${task_name}/nnUNet_raw_data/${task_name}/ /med_dataset/nnunet/prep/nnUNet_raw_data/${task_name}/"
+
+nnUNet_plan_and_preprocess -t ${task_num} -tl 1 -tf 1 --verify_dataset_integrity
+
+python /home/lin/Desktop/git/seg/unet_exp/covpkl.py ${data_dir}
+
+xfce4-terminal --hold --title "nnUNet_cropped_data/${task_name}" -e "baidupcs u /home/lin/Desktop/data/nnunet/${task_name}/nnUNet_cropped_data/${task_name} /med_dataset/nnunet/prep/nnUNet_cropped_data/${task_name}"
+
+xfce4-terminal --hold --title "nnUNet_preprocessed/${task_name}" -e "baidupcs u /home/lin/Desktop/data/nnunet/${task_name}/nnUNet_preprocessed/${task_name} /med_dataset/nnunet/prep/nnUNet_preprocessed/${task_name}"
+
+
+cd /home/lin/Desktop/data/nnunet/${task_name}
+zip -r nnunet-${task_name}.zip nnUNet_cropped_data/${task_name} nnUNet_preprocessed/${task_name} nnUNet_raw_data/${task_name}
+baidupcs u /home/lin/Desktop/data/nnunet/${task_name}/nnunet-${task_name}.zip /med_dataset/nnunet/prep/zip/
+```
 
 预处理流程
 1. 裁剪数据，找到扫描中非0的部分，用bb包起来，把bb里的裁出来。对头部这种目标小的会有用。每个扫描在 nnUNet_cropped_data 下一个 npz，一个pkl。
