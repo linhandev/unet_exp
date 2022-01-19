@@ -1,15 +1,13 @@
 # unet_exp
-hl进展
+在paddlecv-sig fork了nnunet，单进程用for替换starmap避免挂住，加入tqdm显示进度，并对代码做了一些注释
+
+https://github.com/PaddleCV-SIG/nnUNet
 
 # 数据集
+在共享文件夹里
+
 - msd 10个task
-链接: https://pan.baidu.com/s/13QyioAcNbHCk7QpRJ0B4pA 提取码: a9g2
---来自百度网盘超级会员v6的分享
-
 - msd nnunet 预处理
-链接: https://pan.baidu.com/s/1RnE3LOQE6y3COdLL6tlMdA 提取码: ugu0
---来自百度网盘超级会员v6的分享
-
 - CT spine 1k
 
 # 环境
