@@ -43,51 +43,60 @@ echo  RESULTS_FOLDER: ${RESULTS_FOLDER}
 ```
 
 # nnunet预处理
+
 ```shell
-
+# msd10个任务预处理
 # 环境
-zip_name=Task02_Heart
-task_name=$(python -c "print('${zip_name}'.replace('0', '00'))")
+zip_name=Task04_Hippocampus
+task_name=$(python -c "print('Task0'+'${zip_name}'[4:])")
 task_num=$(python -c "print('${zip_name}'[4:6])")
+nnunet_data_dir=/home/lin/Desktop/data/nnunet/${task_name}
+msd_zip_dir=/home/lin/Desktop/msd
+wangpan_base=/med_dataset/nnunet/prep
 
-echo ${zip_name}
-echo ${task_name}
-echo ${task_num}
+export nnUNet_raw_data_base=${nnunet_data_dir}
+export nnUNet_preprocessed=${nnunet_data_dir}/nnUNet_preprocessed
+export RESULTS_FOLDER=${nnunet_data_dir}/RESULTS_FOLDER
 
-conda activate torch
-data_dir=/home/lin/Desktop/data/nnunet/${task_name}
-export nnUNet_raw_data_base=${data_dir}
-export nnUNet_preprocessed=${data_dir}/nnUNet_preprocessed
-export RESULTS_FOLDER=${data_dir}/RESULTS_FOLDER
-
-echo  nnUNet_raw_data_base: ${nnUNet_raw_data_base}
-echo  nnUNet_preprocessed: ${nnUNet_preprocessed}
-echo  RESULTS_FOLDER: ${RESULTS_FOLDER}
-
+echo -e '\n\n'
+echo zip_name: ${zip_name}
+echo task_name: ${task_name}
+echo task_num: ${task_num}
+echo msd_zip_dir: ${msd_zip_dir}
+echo wangpan_base: ${wangpan_base}
+echo nnUNet_raw_data_base: ${nnUNet_raw_data_base}
+echo nnUNet_preprocessed: ${nnUNet_preprocessed}
+echo RESULTS_FOLDER: ${RESULTS_FOLDER}
+echo -e '\n\n'
 sleep 3
 
-cd /home/lin/Desktop/msd/
+conda activate torch
+
+cd ${msd_zip_dir}
 tar -xvf ${zip_name}.tar
 pwd
 ls
 sleep 3
 
-nnUNet_convert_decathlon_task -i /home/lin/Desktop/msd/${zip_name} # 4d序列会拆分成3d
+nnUNet_convert_decathlon_task -i ${msd_zip_dir}/${zip_name} # 4d序列会拆分成3d
 
-xfce4-terminal --hold --title "nnUNet_raw_data/${task_name}/" -e "baidupcs u /home/lin/Desktop/data/nnunet/${task_name}/nnUNet_raw_data/${task_name}/ /med_dataset/nnunet/prep/nnUNet_raw_data/${task_name}/"
+# rm -rf ${msd_zip_dir}/${zip_name}
+
+xfce4-terminal --hold --title "nnUNet_raw_data/${task_name}" -e "baidupcs u ${nnUNet_raw_data_base}/nnUNet_raw_data/${task_name} ${wangpan_base}/nnUNet_raw_data/"
 
 nnUNet_plan_and_preprocess -t ${task_num} -tl 1 -tf 1 --verify_dataset_integrity
 
-python /home/lin/Desktop/git/seg/unet_exp/covpkl.py ${data_dir}
+python /home/lin/Desktop/git/seg/unet_exp/covpkl.py ${nnunet_data_dir}
 
-xfce4-terminal --hold --title "nnUNet_cropped_data/${task_name}" -e "baidupcs u /home/lin/Desktop/data/nnunet/${task_name}/nnUNet_cropped_data/${task_name} /med_dataset/nnunet/prep/nnUNet_cropped_data/${task_name}"
+xfce4-terminal --hold --title "nnUNet_cropped_data/${task_name}" -e "baidupcs u ${nnUNet_raw_data_base}/nnUNet_cropped_data/${task_name} ${wangpan_base}/nnUNet_cropped_data/"
 
-xfce4-terminal --hold --title "nnUNet_preprocessed/${task_name}" -e "baidupcs u /home/lin/Desktop/data/nnunet/${task_name}/nnUNet_preprocessed/${task_name} /med_dataset/nnunet/prep/nnUNet_preprocessed/${task_name}"
+xfce4-terminal --hold --title "nnUNet_preprocessed/${task_name}" -e "baidupcs u ${nnUNet_raw_data_base}/nnUNet_preprocessed/${task_name} ${wangpan_base}/nnUNet_preprocessed/"
 
 
-cd /home/lin/Desktop/data/nnunet/${task_name}
+cd ${nnUNet_raw_data_base}
 zip -r nnunet-${task_name}.zip nnUNet_cropped_data/${task_name} nnUNet_preprocessed/${task_name} nnUNet_raw_data/${task_name}
-baidupcs u /home/lin/Desktop/data/nnunet/${task_name}/nnunet-${task_name}.zip /med_dataset/nnunet/prep/zip/
+
+baidupcs u ${nnUNet_raw_data_base}/nnunet-${task_name}.zip ${wangpan_base}/zip/
 ```
 
 预处理流程
