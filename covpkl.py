@@ -45,6 +45,7 @@ class NumpyEncoder(json.JSONEncoder):
 
 
 for root, dirs, files in os.walk(path):
+    print("converting ", root)
     for file in files:
         if file.endswith(".pkl"):
             # print("converting file: ", file)
