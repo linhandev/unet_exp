@@ -47,10 +47,12 @@ class NumpyEncoder(json.JSONEncoder):
 for root, dirs, files in os.walk(path):
     for file in files:
         if file.endswith(".pkl"):
-            print("converting file: ", file)
+            # print("converting file: ", file)
             with open(osp.join(root, file), "rb") as f:
                 data = pickle.load(f)
             # print(type(data))
             # print(json.dumps(data, cls=NumpyEncoder))
             with open(osp.join(root, file + ".json"), "w") as f:
                 print(json.dumps(data, cls=NumpyEncoder, indent=4), file=f)
+
+print("------------------ converted pkl ------------------")
